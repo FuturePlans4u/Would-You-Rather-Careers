@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Career Would You Rather</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef6ff, #f8fbff);
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+      padding: 28px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #4b5563;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #f9fbff;
+      border: 1px solid #dbe7ff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 850px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    input, select {
+      border: 1px solid #c9d5ea;
+      background: #fff;
+    }
+
+    button {
+      border: none;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .start-btn {
+      background: #2563eb;
+    }
+
+    .start-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .option-btn {
+      background: #0f766e;
+    }
+
+    .option-btn:hover {
+      background: #115e59;
+    }
+
+    .next-btn {
+      background: #64748b;
+    }
+
+    .next-btn:hover {
+      background: #475569;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .pill {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      padding: 10px 14px;
+      border-radius: 999px;
+    }
+
+    .choice-box {
+      background: #ffffff;
+      border: 2px solid #dbe7ff;
+      border-radius: 14px;
+      padding: 18px;
+      min-height: 260px;
+    }
+
+    .choice-title {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 14px;
+      color: #0f172a;
+    }
+
+    .section-label {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    .good-box, .reality-box {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .good-box {
+      background: #ecfdf5;
+      border: 1px solid #86efac;
+    }
+
+    .reality-box {
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+    }
+
+    .result {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .summary-box {
+      margin-top: 15px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .reveal-job {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Career Would You Rather</h1>
+    <p class="subtitle">Pick between two mystery careers based on the good and the reality.</p>
+
+    <div id="startScreen">
+      <div class="card">
+        <div class="grid">
+          <div>
+            <label for="playerName">Player Name</label>
+            <input type="text" id="playerName" placeholder="Enter your name" />
+          </div>
+
+          <div>
+            <label for="roundSelect">Number of Rounds</label>
+            <select id="roundSelect">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="start-btn" onclick="startGame()">Start Game</button>
+
+        <div class="summary-box">
+          <strong>Total careers loaded:</strong> <span id="careerCount"></span><br>
+          <strong>How to play:</strong> Read the <strong>Good</strong> and the <strong>Reality</strong> for two mystery careers, choose the one you would rather do, then the game reveals the career names.
+        </div>
+      </div>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+      <div class="scoreboard">
+        <div class="pill" id="roundInfo">Round 1 of 10</div>
+        <div class="pill" id="choiceInfo">Choices Made: 0</div>
+      </div>
+
+      <div class="card">
+        <div class="grid">
+          <div class="choice-box">
+            <div class="choice-title">Option 1</div>
+
+            <div class="section-label">Good</div>
+            <div class="good-box" id="option1Good"></div>
+
+            <div class="section-label">Reality</div>
+            <div class="reality-box" id="option1Reality"></div>
+
+            <button class="option-btn" onclick="chooseOption(1)">Choose Option 1</button>
+          </div>
+
+          <div class="choice-box">
+            <div class="choice-title">Option 2</div>
+
+            <div class="section-label">Good</div>
+            <div class="good-box" id="option2Good"></div>
+
+            <div class="section-label">Reality</div>
+            <div class="reality-box" id="option2Reality"></div>
+
+            <button class="option-btn" onclick="chooseOption(2)">Choose Option 2</button>
+          </div>
+        </div>
+
+        <div id="resultBox" class="result hidden"></div>
+        <button id="nextButton" class="next-btn hidden" onclick="nextRound()">Next Round</button>
+      </div>
+    </div>
+
+    <div id="endScreen" class="hidden">
+      <div class="card">
+        <h2 id="finalMessage">Game Over</h2>
+        <p id="finalSummary"></p>
+        <button class="start-btn" onclick="restartGame()">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const careers = [
+      { career: "Doctor", good: "Can save lives and make a major impact.", reality: "10–14 years of education and extremely high stress." },
+      { career: "Nurse", good: "High demand and strong job security.", reality: "Long shifts (often 12 hours) and emotionally intense work." },
+      { career: "Software Developer", good: "High pay and remote work opportunities.", reality: "Long hours debugging problems that may take days to solve." },
+      { career: "Teacher", good: "Shape the future and inspire students.", reality: "Often work unpaid hours grading and planning." },
+      { career: "Electrician", good: "High demand and excellent trade pay without college debt.", reality: "Physically demanding and sometimes dangerous environments." },
+      { career: "Carpenter", good: "Build real things you can see and touch.", reality: "Weather exposure and physically hard work." },
+      { career: "Police Officer", good: "Protect communities and help people.", reality: "High risk and stressful situations daily." },
+      { career: "Firefighter", good: "Save lives and strong team environment.", reality: "Dangerous conditions and irregular sleep schedules." },
+      { career: "Chef", good: "Creative career and opportunity to open your own restaurant.", reality: "Long nights, weekends, and very high stress." },
+      { career: "Mechanic", good: "Always needed and great for hands-on problem solvers.", reality: "Physically demanding and exposure to chemicals." },
+      { career: "Farmer", good: "Independence and connection with nature.", reality: "Long hours and income depends heavily on weather." },
+      { career: "Veterinarian", good: "Help animals and their owners.", reality: "Veterinary school is expensive and emotionally difficult." },
+      { career: "Accountant", good: "Stable career with good pay.", reality: "Busy seasons can mean 60–80 hour weeks." },
+      { career: "Marketing Specialist", good: "Creative work with many industries to choose from.", reality: "Pressure to constantly prove results." },
+      { career: "Data Analyst", good: "High demand and great for problem solving.", reality: "A lot of time cleaning messy data before analysis." },
+      { career: "Architect", good: "Design buildings and shape cities.", reality: "Projects take years and revisions can be endless." },
+      { career: "Pilot", good: "Travel the world and strong pay potential.", reality: "Expensive training and irregular schedules." },
+      { career: "Truck Driver", good: "Strong demand and independence on the road.", reality: "Long periods away from home." },
+      { career: "Construction Manager", good: "High pay and leadership opportunities.", reality: "Stressful deadlines and responsibility for safety." },
+      { career: "Graphic Designer", good: "Creative career with freelance opportunities.", reality: "Clients often want changes… many, many changes." },
+      { career: "Journalist", good: "Investigate stories and inform the public.", reality: "Tight deadlines and declining industry stability." },
+      { career: "Physical Therapist", good: "Help people recover and regain movement.", reality: "Requires years of schooling and patient paperwork." },
+      { career: "Social Worker", good: "Help vulnerable people and communities.", reality: "Emotionally difficult cases and heavy workloads." },
+      { career: "Entrepreneur", good: "Unlimited earning potential and independence.", reality: "High failure rate and financial risk." },
+      { career: "Game Designer", good: "Create video games and interactive worlds.", reality: "Extremely competitive industry." },
+      { career: "Photographer", good: "Creative career capturing meaningful moments.", reality: "Income can be inconsistent." },
+      { career: "Real Estate Agent", good: "High commission potential.", reality: "Income depends on market conditions and sales." },
+      { career: "Dentist", good: "High income and predictable schedules.", reality: "Expensive education and repetitive work." },
+      { career: "Lawyer", good: "High pay and influence in society.", reality: "Long hours and intense pressure." },
+      { career: "Scientist", good: "Discover new knowledge and innovations.", reality: "Experiments fail often and funding is competitive." },
+      { career: "Meteorologist", good: "Study weather and predict storms.", reality: "Forecasts are often criticized when wrong." },
+      { career: "Video Editor", good: "Work in entertainment and media.", reality: "Long hours meeting deadlines." },
+      { career: "Cybersecurity Analyst", good: "Very high demand and strong pay.", reality: "Constant learning required due to evolving threats." },
+      { career: "UX Designer", good: "Improve how people interact with technology.", reality: "Constant testing and feedback cycles." },
+      { career: "Park Ranger", good: "Work outdoors in nature.", reality: "Pay can be lower and locations remote." },
+      { career: "Zoologist", good: "Study wildlife and ecosystems.", reality: "Fieldwork can be physically demanding." },
+      { career: "Air Traffic Controller", good: "High salary and important job.", reality: "Extremely stressful with zero room for mistakes." },
+      { career: "Massage Therapist", good: "Help people relieve pain and stress.", reality: "Physically demanding on hands and body." },
+      { career: "Event Planner", good: "Organize exciting events and celebrations.", reality: "Stressful deadlines and last-minute problems." },
+      { career: "Personal Trainer", good: "Help people improve their health.", reality: "Income can depend on finding clients." },
+      { career: "Librarian", good: "Work with information and education.", reality: "Requires advanced degrees for many positions." },
+      { career: "Tattoo Artist", good: "Creative career and independence.", reality: "Building clientele can take years." },
+      { career: "Animator", good: "Bring characters and stories to life.", reality: "Long hours during production deadlines." },
+      { career: "Environmental Scientist", good: "Protect the environment and natural resources.", reality: "Fieldwork can involve harsh conditions." },
+      { career: "Economist", good: "Influence business and government policy.", reality: "Requires advanced math and statistics." },
+      { career: "Pharmacist", good: "High pay and respected profession.", reality: "Requires doctoral degree and long schooling." },
+      { career: "Radiologic Technologist", good: "Use advanced imaging technology.", reality: "Standing for long periods and patient lifting." },
+      { career: "Medical Lab Technician", good: "Work behind the scenes diagnosing illness.", reality: "Repetitive testing work." },
+      { career: "Paramedic", good: "Save lives in emergencies.", reality: "High stress and traumatic situations." },
+      { career: "Surgeon", good: "Perform life-saving procedures.", reality: "Extremely long education and training." },
+      { career: "Psychologist", good: "Help people understand behavior.", reality: "Many years of education required." },
+      { career: "Genetic Counselor", good: "Help families understand genetic risks.", reality: "Requires specialized graduate degree." },
+      { career: "Biomedical Engineer", good: "Design medical technology.", reality: "Highly technical and competitive field." },
+      { career: "Epidemiologist", good: "Study and stop disease outbreaks.", reality: "Heavy data analysis and research work." },
+      { career: "Speech Therapist", good: "Help people communicate better.", reality: "Requires master's degree and patience." },
+      { career: "Data Scientist", good: "Very high demand and strong salaries.", reality: "Requires advanced math and coding skills." },
+      { career: "AI Engineer", good: "Work on cutting-edge technology.", reality: "Constantly evolving skills required." },
+      { career: "Web Developer", good: "Build websites used worldwide.", reality: "Deadlines and client revisions." },
+      { career: "Database Administrator", good: "Manage important company data.", reality: "Mistakes can affect entire organizations." },
+      { career: "IT Support Specialist", good: "Solve tech problems daily.", reality: "Often deal with frustrated users." },
+      { career: "Network Engineer", good: "Build large technology systems.", reality: "On-call work during outages." },
+      { career: "Cloud Architect", good: "Design cloud systems for companies.", reality: "High responsibility for data security." },
+      { career: "Game Tester", good: "Play video games for work.", reality: "Repetitive testing and long hours." },
+      { career: "Cybersecurity Specialist", good: "Protect organizations from hackers.", reality: "Constant pressure and evolving threats." },
+      { career: "Robotics Engineer", good: "Design robots and automation.", reality: "Requires strong engineering background." },
+      { career: "Plumber", good: "High demand and good income.", reality: "Emergency calls and messy work." },
+      { career: "HVAC Technician", good: "Always needed in homes and businesses.", reality: "Working in hot or cramped environments." },
+      { career: "Welder", good: "Build important infrastructure.", reality: "Exposure to heat and sparks." },
+      { career: "Heavy Equipment Operator", good: "Operate large construction machines.", reality: "Long hours and outdoor work." },
+      { career: "Roofer", good: "High earning potential.", reality: "Dangerous heights and weather exposure." },
+      { career: "Stone Mason", good: "Create lasting structures.", reality: "Physically demanding work." },
+      { career: "Boilermaker", good: "Work on large industrial systems.", reality: "Dangerous environments." },
+      { career: "Ironworker", good: "Build skyscrapers and bridges.", reality: "Very high-risk job." },
+      { career: "Diesel Mechanic", good: "Maintain large vehicles and equipment.", reality: "Heavy tools and physical strain." },
+      { career: "Elevator Installer", good: "High pay skilled trade.", reality: "Requires precision and safety focus." },
+      { career: "Fashion Designer", good: "Create clothing trends.", reality: "Extremely competitive industry." },
+      { career: "Interior Designer", good: "Transform living spaces.", reality: "Client expectations can be demanding." },
+      { career: "Film Director", good: "Lead creative storytelling.", reality: "Projects take years to complete." },
+      { career: "Screenwriter", good: "Write movies or TV shows.", reality: "Many scripts never get produced." },
+      { career: "Illustrator", good: "Turn ideas into artwork.", reality: "Freelance income can fluctuate." },
+      { career: "Music Producer", good: "Create music with artists.", reality: "Long studio hours." },
+      { career: "Voice Actor", good: "Work in animation or games.", reality: "Highly competitive field." },
+      { career: "Set Designer", good: "Design environments for movies or theater.", reality: "Tight production deadlines." },
+      { career: "Copywriter", good: "Write ads and marketing campaigns.", reality: "Must constantly generate creative ideas." },
+      { career: "Art Director", good: "Lead creative teams.", reality: "Responsible for big project outcomes." },
+      { career: "Financial Analyst", good: "Analyze investments and markets.", reality: "Long hours during reporting seasons." },
+      { career: "Investment Banker", good: "Very high salaries.", reality: "Extremely demanding workload." },
+      { career: "Business Consultant", good: "Help companies improve.", reality: "Frequent travel and deadlines." },
+      { career: "Project Manager", good: "Lead teams to complete goals.", reality: "Responsible when projects fail." },
+      { career: "Insurance Adjuster", good: "Investigate claims and damages.", reality: "Often deal with difficult situations." },
+      { career: "Supply Chain Manager", good: "Manage global product movement.", reality: "Disruptions can cause major stress." },
+      { career: "Human Resources Manager", good: "Help manage company culture.", reality: "Must handle workplace conflicts." },
+      { career: "Stock Trader", good: "Potential for high earnings.", reality: "Financial losses are possible." },
+      { career: "Operations Manager", good: "Improve company efficiency.", reality: "Responsible for many departments." },
+      { career: "Wildlife Biologist", good: "Study animals in nature.", reality: "Fieldwork in remote areas." },
+      { career: "Forester", good: "Manage forests and ecosystems.", reality: "Physically demanding outdoor work." },
+      { career: "Marine Biologist", good: "Study ocean life.", reality: "Competitive research jobs." },
+      { career: "Environmental Engineer", good: "Solve pollution problems.", reality: "Complex regulations." },
+      { career: "Park Naturalist", good: "Teach people about nature.", reality: "Seasonal employment." },
+      { career: "Fishery Scientist", good: "Protect fish populations.", reality: "Fieldwork in harsh weather." },
+      { career: "Geologist", good: "Study Earth's resources.", reality: "Travel to remote locations." },
+      { career: "Conservation Scientist", good: "Protect land and ecosystems.", reality: "Funding for projects can be limited." },
+      { career: "Urban Planner", good: "Design better cities.", reality: "Projects take years to complete." },
+      { career: "Hydrologist", good: "Study water systems.", reality: "Heavy data analysis." },
+      { career: "Commercial Pilot", good: "Travel the world.", reality: "Irregular schedules." },
+      { career: "Train Engineer", good: "Operate powerful trains.", reality: "Overnight shifts common." },
+      { career: "Ship Captain", good: "Lead large vessels.", reality: "Long periods away from home." },
+      { career: "Flight Attendant", good: "Travel and meet people.", reality: "Jet lag and long hours." },
+      { career: "Cruise Director", good: "Organize entertainment on ships.", reality: "Months away from home." },
+      { career: "Logistics Coordinator", good: "Manage transportation systems.", reality: "Time-sensitive decisions." },
+      { career: "Airline Dispatcher", good: "Plan flights and routes.", reality: "High responsibility job." },
+      { career: "Bus Driver", good: "Serve local communities.", reality: "Traffic stress and schedules." },
+      { career: "Railroad Conductor", good: "Work on trains nationwide.", reality: "Physically demanding work." },
+      { career: "Delivery Driver", good: "High demand with flexible jobs.", reality: "Tight delivery deadlines." },
+      { career: "Forensic Scientist", good: "Solve crimes with science.", reality: "Lab work can be slow and detailed." },
+      { career: "Crime Scene Investigator", good: "Help investigate crimes.", reality: "Exposure to disturbing scenes." },
+      { career: "Archaeologist", good: "Discover ancient history.", reality: "Long field seasons and travel." },
+      { career: "Sports Statistician", good: "Analyze sports data.", reality: "Requires strong math skills." },
+      { career: "Stunt Performer", good: "Work in movies and TV.", reality: "High risk of injury." },
+      { career: "Theme Park Designer", good: "Create rides and attractions.", reality: "Projects take years." },
+      { career: "Toy Designer", good: "Create toys for children.", reality: "Market success is unpredictable." },
+      { career: "Food Scientist", good: "Develop new food products.", reality: "Requires strong chemistry knowledge." },
+      { career: "Perfumer", good: "Create fragrances.", reality: "Requires years of training." },
+      { career: "Professional Gamer", good: "Play games competitively.", reality: "Very few earn large incomes." },
+      { career: "YouTuber", good: "Creative freedom and fame potential.", reality: "Income is unpredictable." },
+      { career: "Influencer", good: "Work with brands and audiences.", reality: "Constant content creation." },
+      { career: "Professional Athlete", good: "Fame and high earnings.", reality: "Careers are often short." },
+      { career: "Magician", good: "Entertain audiences.", reality: "Requires years of practice." },
+      { career: "Private Investigator", good: "Solve mysteries.", reality: "Long surveillance hours." },
+      { career: "Travel Blogger", good: "Visit exciting places.", reality: "Constant content deadlines." },
+      { career: "Voiceover Artist", good: "Work in media and advertising.", reality: "Finding steady work is difficult." },
+      { career: "Podcast Host", good: "Share ideas with audiences.", reality: "Growing an audience takes time." },
+      { career: "Drone Operator", good: "Use drones for filming or mapping.", reality: "Requires certification and training." }
+    ];
+
+    let playerName = "";
+    let round = 0;
+    let totalRounds = 10;
+    let gamePairs = [];
+    let currentPair = null;
+    let choicesMade = 0;
+    let answeredThisRound = false;
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function buildPairs(data, rounds) {
+      const shuffled = shuffle(data);
+      const pairs = [];
+      const maxPairs = Math.min(rounds, Math.floor(shuffled.length / 2));
+
+      for (let i = 0; i < maxPairs * 2; i += 2) {
+        pairs.push([shuffled[i], shuffled[i + 1]]);
+      }
+
+      return pairs;
+    }
+
+    function startGame() {
+      playerName = document.getElementById("playerName").value.trim() || "Player";
+      totalRounds = Number(document.getElementById("roundSelect").value);
+
+      const maxPossibleRounds = Math.floor(careers.length / 2);
+      if (totalRounds > maxPossibleRounds) {
+        totalRounds = maxPossibleRounds;
+      }
+
+      round = 0;
+      choicesMade = 0;
+      answeredThisRound = false;
+      gamePairs = buildPairs(careers, totalRounds);
+
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("endScreen").classList.add("hidden");
+      document.getElementById("gameScreen").classList.remove("hidden");
+
+      loadRound();
+    }
+
+    function loadRound() {
+      currentPair = gamePairs[round];
+      answeredThisRound = false;
+
+      const option1 = currentPair[0];
+      const option2 = currentPair[1];
+
+      document.getElementById("roundInfo").textContent = `Round ${round + 1} of ${totalRounds}`;
+      document.getElementById("choiceInfo").textContent = `Choices Made: ${choicesMade}`;
+
+      document.getElementById("option1Good").textContent = option1.good;
+      document.getElementById("option1Reality").textContent = option1.reality;
+
+      document.getElementById("option2Good").textContent = option2.good;
+      document.getElementById("option2Reality").textContent = option2.reality;
+
+      document.getElementById("resultBox").classList.add("hidden");
+      document.getElementById("resultBox").innerHTML = "";
+      document.getElementById("nextButton").classList.add("hidden");
+    }
+
+    function chooseOption(optionNumber) {
+      if (answeredThisRound) return;
+
+      answeredThisRound = true;
+      choicesMade++;
+
+      const chosen = optionNumber === 1 ? currentPair[0] : currentPair[1];
+      const other = optionNumber === 1 ? currentPair[1] : currentPair[0];
+
+      const resultBox = document.getElementById("resultBox");
+      resultBox.innerHTML = `
+        <div class="reveal-job">You'd rather be a ${chosen.career} than a ${other.career}.</div>
+        <br>
+        <strong>Your choice:</strong> Option ${optionNumber}<br><br>
+
+        <strong>${chosen.career}</strong><br>
+        Good: ${chosen.good}<br>
+        Reality: ${chosen.reality}<br><br>
+
+        <strong>${other.career}</strong><br>
+        Good: ${other.good}<br>
+        Reality: ${other.reality}
+      `;
+      resultBox.classList.remove("hidden");
+
+      document.getElementById("choiceInfo").textContent = `Choices Made: ${choicesMade}`;
+      document.getElementById("nextButton").classList.remove("hidden");
+    }
+
+    function nextRound() {
+      round++;
+      if (round >= totalRounds) {
+        endGame();
+      } else {
+        loadRound();
+      }
+    }
+
+    function endGame() {
+      document.getElementById("gameScreen").classList.add("hidden");
+      document.getElementById("endScreen").classList.remove("hidden");
+
+      document.getElementById("finalMessage").textContent = `Nice choices, ${playerName}!`;
+      document.getElementById("finalSummary").textContent =
+        `You completed ${totalRounds} rounds and made ${choicesMade} career choices. This game helps students choose based on what matters to them, not just flashy job titles.`;
+    }
+
+    function restartGame() {
+      document.getElementById("playerName").value = "";
+      document.getElementById("startScreen").classList.remove("hidden");
+      document.getElementById("gameScreen").classList.add("hidden");
+      document.getElementById("endScreen").classList.add("hidden");
+    }
+
+    document.getElementById("careerCount").textContent = careers.length;
+  </script>
+</body>
+</html>
